@@ -336,7 +336,7 @@
       "url": "https://packages.unity.com"
     },
     "com.veriorpies.parrelsync": {
-      "version": "file:C:/Users/rafab/Downloads/ParrelSync-master/ParrelSync-master/ParrelSync",
+      "version": "file:C:/Users/rafael.raiser/Downloads/ParrelSync-master/ParrelSync-master/ParrelSync",
       "depth": 0,
       "source": "local",
       "dependencies": {}
