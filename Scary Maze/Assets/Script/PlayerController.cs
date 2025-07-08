@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
 public class PlayerController : NetworkBehaviour
 {
     public Transform startPoint;
-    public GameObject jumpscarePanel;
     public GameObject victoryPanel;
+    public GameObject defeatPanel;
 
     private void Update()
     {
@@ -25,18 +23,12 @@ public class PlayerController : NetworkBehaviour
         if (collision.CompareTag("Wall"))
         {
             transform.position = startPoint.position;
-            jumpscarePanel.SetActive(true);
-            Invoke(nameof(HideJumpscare), 1f);
+            defeatPanel.SetActive(true);
         }
 
         if (collision.CompareTag("Goal"))
         {
             victoryPanel.SetActive(true);
         }
-    }
-
-    void HideJumpscare()
-    {
-        jumpscarePanel.SetActive(false);
     }
 }

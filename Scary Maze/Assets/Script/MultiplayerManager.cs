@@ -1,46 +1,63 @@
 using UnityEngine;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
-using Unity.Netcode;
 using TMPro;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using Unity.Services.Authentication;
+using Unity.Services.Core;
 using System.Threading.Tasks;
+using Unity.Netcode;
 
 public class MultiplayerManager : MonoBehaviour
 {
-    public TMP_InputField codeInput;
-    public GameObject lobbyPanel;
+    public TMP_InputField joinCodeInput;
+    public TMP_Text generatedCodeText;
+    public GameObject startGameButton;
 
-    private async void Start()
+    private string joinCode;
+    private bool isHost = false;
+
+    private async void Awake()
     {
-        await Unity.Services.Core.UnityServices.InitializeAsync();
+        if (!UnityServices.State.Equals(ServicesInitializationState.Initialized))
+        {
+            await UnityServices.InitializeAsync();
+            if (!AuthenticationService.Instance.IsSignedIn)
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+        }
+
+        startGameButton.SetActive(false);
+        generatedCodeText.text = "";
     }
 
     public async void CreateLobby()
     {
         var allocation = await RelayService.Instance.CreateAllocationAsync(2);
-        string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+        joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
-        var transport = NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
-        transport.SetHostRelayData(allocation.RelayServer.IpV4, (ushort)allocation.RelayServer.Port,
-            allocation.AllocationIdBytes, allocation.Key, allocation.ConnectionData);
+        generatedCodeText.text = "Código da Sala: " + joinCode;
+        isHost = true;
 
-        NetworkManager.Singleton.StartHost();
-        codeInput.text = joinCode;
-        lobbyPanel.SetActive(false);
+        // Guarda os dados para carregar na próxima cena depois
+        PlayerPrefs.SetString("JOINCODE", joinCode);
+        PlayerPrefs.SetInt("ISHOST", 1);
+
+        startGameButton.SetActive(true);
     }
 
-    public async void JoinLobby()
+    public void JoinLobby()
     {
-        string joinCode = codeInput.text;
+        joinCode = joinCodeInput.text;
+        if (string.IsNullOrEmpty(joinCode)) return;
 
-        var allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+        PlayerPrefs.SetString("JOINCODE", joinCode);
+        PlayerPrefs.SetInt("ISHOST", 0);
 
-        var transport = NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
-        transport.SetClientRelayData(allocation.RelayServer.IpV4, (ushort)allocation.RelayServer.Port,
-            allocation.AllocationIdBytes, allocation.Key, allocation.ConnectionData, allocation.HostConnectionData);
+        SceneManager.LoadScene("MazeScene");
+    }
 
-        NetworkManager.Singleton.StartClient();
-        lobbyPanel.SetActive(false);
+    public void StartGame()
+    {
+        SceneManager.LoadScene("MazeScene");
     }
 }
