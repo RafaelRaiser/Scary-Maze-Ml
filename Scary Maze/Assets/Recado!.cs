@@ -9,8 +9,8 @@
  * UM POUCO DA CABECA PARAR DE PROCRASTINAR E FOCAR 100% DDESCULPE!
  * 
  * 
- * 
- * 
+ * Isso foi bem gay ams ta foda to meio mal no geral so vou pegar essasferias para focar e me lembrar de parar de procrastinar e focar no que importa  , obrigado por ler
+ *  e vamos pra cima SUPER RAFAEL 69
  * 
  * 
  * /
